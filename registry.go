@@ -23,7 +23,7 @@ func GetRegDirs(path string) (ss []string, err error) {
 	return
 }
 
-// GetRegASCII read value (base: ascii) from win registry
+// GetRegASCII read value (base: ascii) from win registry accept HKEY like HKLM or HKEY_LOCAL_MACHINE
 func GetRegASCII(path, name string) (val []byte, err error) {
 	ts := strings.SplitN(path, "\\", 2)
 	if len(ts) != 2 {
@@ -45,24 +45,19 @@ func GetRegASCII(path, name string) (val []byte, err error) {
 	return
 }
 
-// GetRegUnicode read value (base: ascii) from win registry
+// GetRegUnicode read value (base: ascii) from win registry accept HKEY like HKLM or HKEY_LOCAL_MACHINE
 func GetRegUnicode(hkey, path, name string) (val []byte, err error) {
 	var handle syscall.Handle
 	switch hkey {
-	case "HKLM":
-	case "HKEY_LOCAL_MACHINE":
+	case "HKLM", "HKEY_LOCAL_MACHINE":
 		err = syscall.RegOpenKeyEx(syscall.HKEY_LOCAL_MACHINE, syscall.StringToUTF16Ptr(path), 0, syscall.KEY_READ, &handle)
-	case "HKCC":
-	case "HKEY_CURRENT_CONFIG":
+	case "HKCC", "HKEY_CURRENT_CONFIG":
 		err = syscall.RegOpenKeyEx(syscall.HKEY_CURRENT_CONFIG, syscall.StringToUTF16Ptr(path), 0, syscall.KEY_READ, &handle)
-	case "HKCR":
-	case "HKEY_CLASSES_ROOT":
+	case "HKCR", "HKEY_CLASSES_ROOT":
 		err = syscall.RegOpenKeyEx(syscall.HKEY_CLASSES_ROOT, syscall.StringToUTF16Ptr(path), 0, syscall.KEY_READ, &handle)
-	case "HKCU":
-	case "HKEY_CURRENT_USER":
+	case "HKCU", "HKEY_CURRENT_USER":
 		err = syscall.RegOpenKeyEx(syscall.HKEY_CURRENT_USER, syscall.StringToUTF16Ptr(path), 0, syscall.KEY_READ, &handle)
-	case "HKU":
-	case "HKEY_USERS":
+	case "HKU", "HKEY_USERS":
 		err = syscall.RegOpenKeyEx(syscall.HKEY_USERS, syscall.StringToUTF16Ptr(path), 0, syscall.KEY_READ, &handle)
 	default:
 		err = errors.New("Unknown HKEY: " + hkey)
